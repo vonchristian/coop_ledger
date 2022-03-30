@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_03_30_102415) do
+ActiveRecord::Schema[7.0].define(version: 2022_03_30_104759) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -22,6 +22,18 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_30_102415) do
     t.string "address"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "employees", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "first_name"
+    t.string "last_name"
+    t.string "email"
+    t.string "password_digest"
+    t.uuid "office_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_employees_on_email", unique: true
+    t.index ["office_id"], name: "index_employees_on_office_id"
   end
 
   create_table "offices", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -36,5 +48,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_30_102415) do
     t.index ["office_type"], name: "index_offices_on_office_type"
   end
 
+  add_foreign_key "employees", "offices"
   add_foreign_key "offices", "cooperatives"
 end
