@@ -53,10 +53,10 @@ group :development, :test do
   gem "pry", "~> 0.13.1"
   gem 'rspec-rails', '~> 5.0.0'
   gem "factory_bot_rails"
+  gem "faker"
 end
 
 group :development do
-
   gem "bullet"
   gem "rack-mini-profiler", "~> 2.0"
 end
