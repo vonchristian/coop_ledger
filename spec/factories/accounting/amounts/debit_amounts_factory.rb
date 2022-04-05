@@ -3,7 +3,9 @@
 FactoryBot.define do
   factory :debit_amount, class: "Accounting::Amounts::DebitAmount" do
     association :entry
-    amount_cents { 100 }
+    amount_cents { 10_000 }
     association :account, factory: [:account, :asset]
+    recording_date { Date.current }
+    recording_time { Time.zone.now }
   end
 end

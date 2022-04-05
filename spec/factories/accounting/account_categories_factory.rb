@@ -2,6 +2,7 @@
 
 FactoryBot.define do
   factory :account_category, class: "Accounting::AccountCategory" do
+    name         { Faker::Commerce.product_name }
     account_type { Accounting::AccountType::ASSET }
     code { SecureRandom.hex(8) }
     contra { false }

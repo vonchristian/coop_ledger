@@ -2,7 +2,11 @@
 
 module Accounting
   module NormalCreditBalance
-    NORMAL_CREDIT_BALANCE = ['equity', 'liability', 'revenue'].freeze
+    NORMAL_CREDIT_BALANCE = [
+      Accounting::AccountType::EQUITY,
+      Accounting::AccountType::LIABILITY,
+      Accounting::AccountType::REVENUE,
+    ].freeze
 
     def normal_credit_balance
       NORMAL_CREDIT_BALANCE.include?(account_type)

@@ -1,6 +1,7 @@
 class CreateAccountCategories < ActiveRecord::Migration[7.0]
   def change
     create_table :account_categories, id: :uuid do |t|
+      t.string :name, null: false
       t.string :account_type, null: false
       t.string :code, null: false
       t.boolean :contra, default: true
