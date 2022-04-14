@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_03_31_091832) do
+ActiveRecord::Schema[7.0].define(version: 2022_04_07_010824) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -125,6 +125,51 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_31_091832) do
     t.index ["office_id"], name: "index_entries_on_office_id"
   end
 
+  create_table "membership_applications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "membership_category_id", null: false
+    t.uuid "cooperative_id", null: false
+    t.string "first_name", null: false
+    t.string "middle_name", null: false
+    t.string "last_name", null: false
+    t.integer "date_of_birth_day", null: false
+    t.integer "date_of_birth_month", null: false
+    t.integer "date_of_birth_year", null: false
+    t.string "email"
+    t.string "phone_number"
+    t.string "civil_status", null: false
+    t.string "sex", null: false
+    t.string "reference_number", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["civil_status"], name: "index_membership_applications_on_civil_status"
+    t.index ["cooperative_id"], name: "index_membership_applications_on_cooperative_id"
+    t.index ["email"], name: "index_membership_applications_on_email", unique: true
+    t.index ["membership_category_id"], name: "index_membership_applications_on_membership_category_id"
+    t.index ["reference_number"], name: "index_membership_applications_on_reference_number", unique: true
+    t.index ["sex"], name: "index_membership_applications_on_sex"
+  end
+
+  create_table "membership_categories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "cooperative_id", null: false
+    t.string "title", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cooperative_id"], name: "index_membership_categories_on_cooperative_id"
+  end
+
+  create_table "memberships", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "member_id", null: false
+    t.uuid "cooperative_id", null: false
+    t.uuid "membership_category_id", null: false
+    t.date "approval_date"
+    t.date "application_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cooperative_id"], name: "index_memberships_on_cooperative_id"
+    t.index ["member_id"], name: "index_memberships_on_member_id"
+    t.index ["membership_category_id"], name: "index_memberships_on_membership_category_id"
+  end
+
   create_table "offices", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "office_type", null: false
     t.string "name", null: false
@@ -135,6 +180,24 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_31_091832) do
     t.datetime "updated_at", null: false
     t.index ["cooperative_id"], name: "index_offices_on_cooperative_id"
     t.index ["office_type"], name: "index_offices_on_office_type"
+  end
+
+  create_table "people", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "first_name", null: false
+    t.string "middle_name", null: false
+    t.string "last_name", null: false
+    t.integer "date_of_birth_day", null: false
+    t.integer "date_of_birth_month", null: false
+    t.integer "date_of_birth_year", null: false
+    t.string "email"
+    t.string "phone_number"
+    t.string "civil_status", null: false
+    t.string "sex", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["civil_status"], name: "index_people_on_civil_status"
+    t.index ["email"], name: "index_people_on_email", unique: true
+    t.index ["sex"], name: "index_people_on_sex"
   end
 
   add_foreign_key "account_categories", "offices"
@@ -150,5 +213,11 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_31_091832) do
   add_foreign_key "debit_amounts", "entries"
   add_foreign_key "employees", "offices"
   add_foreign_key "entries", "offices"
+  add_foreign_key "membership_applications", "cooperatives"
+  add_foreign_key "membership_applications", "membership_categories"
+  add_foreign_key "membership_categories", "cooperatives"
+  add_foreign_key "memberships", "cooperatives"
+  add_foreign_key "memberships", "membership_categories"
+  add_foreign_key "memberships", "people", column: "member_id"
   add_foreign_key "offices", "cooperatives"
 end

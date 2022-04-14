@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Accounting
   class Account < ApplicationRecord
     extend Accounting::Balances::AggregatedAccount
@@ -7,25 +9,23 @@ module Accounting
 
     belongs_to :office
     belongs_to :account_category
-    has_many :debit_amounts,    class_name: 'Accounting::Amounts::DebitAmount'
-    has_many :credit_amounts,   class_name: 'Accounting::Amounts::CreditAmount'
+    has_many :debit_amounts,    class_name: "Accounting::Amounts::DebitAmount", dependent: :restrict_with_exception
+    has_many :credit_amounts,   class_name: "Accounting::Amounts::CreditAmount", dependent: :restrict_with_exception
     has_many :debit_entries,    class_name: "Accounting::Entry", through: :debit_amounts, source: :entry
     has_many :credit_entries,   class_name: "Accounting::Entry", through: :credit_amounts, source: :entry
-    has_many :running_balances, class_name: "Accounting::Accounts::RunningBalance"
+    has_many :running_balances, class_name: "Accounting::Accounts::RunningBalance", dependent: :restrict_with_exception
 
     validates :name, :code, :account_type, presence: true
-    validates_inclusion_of :account_type, in: Accounting::AccountType::ACCOUNT_TYPES
+    validates :account_type, inclusion: Accounting::AccountType::ACCOUNT_TYPES
 
-    scope :assets,   -> { where(account_type: Accounting::AccountType::ASSET) }
+    scope :assets,      -> { where(account_type: Accounting::AccountType::ASSET) }
     scope :liabilities, -> { where(account_type: Accounting::AccountType::LIABILITY) }
-    scope :equities, -> { where(account_type: Accounting::AccountType::EQUITY) }
-    scope :expenses, -> { where(account_type: Accounting::AccountType::EXPENSE) }
-    scope :revenues, -> { where(account_type: Accounting::AccountType::REVENUE) }
-
-
+    scope :equities,    -> { where(account_type: Accounting::AccountType::EQUITY) }
+    scope :expenses,    -> { where(account_type: Accounting::AccountType::EXPENSE) }
+    scope :revenues,    -> { where(account_type: Accounting::AccountType::REVENUE) }
 
     before_save do
-      ensure_same_type_with_account_category
+      validate :same_type_with_account_category
     end
 
     def self.find_accounts(ids:)
@@ -50,7 +50,7 @@ module Accounting
 
     private
 
-    def ensure_same_type_with_account_category
+    def same_type_with_account_category
       if account_category&.account_type != account_type
         errors.add(:account_type, "expecting '#{account_type}' but it was '#{account_category.account_type}'")
       end

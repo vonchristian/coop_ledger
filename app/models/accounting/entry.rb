@@ -33,15 +33,16 @@ module Accounting
     private
 
     def has_credit_amounts?
-      errors[:base] << "Entry must have at least one credit amount" if self.credit_amounts.blank?
+      errors[:base] << "Entry must have at least one credit amount" if credit_amounts.blank?
     end
 
     def has_debit_amounts?
-      errors[:base] << "Entry must have at least one debit amount" if self.debit_amounts.blank?
+      errors[:base] << "Entry must have at least one debit amount" if debit_amounts.blank?
     end
 
     def amounts_cancel?
-      errors[:base] << "The credit and debit amounts are not equal" if credit_amounts.balance_for_new_record != debit_amounts.balance_for_new_record
+      return errors[:base] << "The credit and debit amounts are not equal" if credit_amounts.balance_for_new_record != debit_amounts.balance_for_new_record
+      return errors[:base] << "The credit and debit amounts are not equal" if credit_amounts.total != debit_amounts.total
     end
   end
 end

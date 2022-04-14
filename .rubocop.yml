@@ -127,3 +127,6 @@ Style/MultilineBlockChain:
 
 Style/MethodCallWithArgsParentheses:
   Enabled: false
+
+Rspec/BeEql:
+  Enabled: false

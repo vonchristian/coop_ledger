@@ -7,7 +7,7 @@ FactoryBot.define do
     description      { "MyText" }
 
     factory :entry_with_debit_and_credit, class: "Accounting::Entry" do
-      after(:create) do |entry|
+      after(:build) do |entry|
         entry.debit_amounts << create(:debit_amount,
           entry: entry,
           recording_date: entry.recording_date,

@@ -9,6 +9,8 @@ module Accounting
 
       belongs_to :entry
       belongs_to :account
+
+      validates :amount_cents, numericality: { greater_than: 0.0 }
     end
   end
 end
