@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Members
+module Memberships
   class Membership < ApplicationRecord
     belongs_to :member, class_name: "Person"
     belongs_to :cooperative

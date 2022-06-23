@@ -2,10 +2,10 @@ class CreateAccountCategoryRunningBalances < ActiveRecord::Migration[7.0]
   def change
     create_table :account_category_running_balances, id: :uuid do |t|
       t.belongs_to :account_category, null: false, foreign_key: true, type: :uuid
-      t.belongs_to :entry, foreign_key: true, type: :uuid
-      t.date :recording_date
-      t.time :recording_time
-      t.integer :amount_cents
+      t.belongs_to :entry, null: false, foreign_key: true, type: :uuid
+      t.date :recording_date, null: false
+      t.column :recording_time, "timestamp with time zone", null: false
+      t.integer :amount_cents, limit: 8, null: false
 
       t.timestamps
     end

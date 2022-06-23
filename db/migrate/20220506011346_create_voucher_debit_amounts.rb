@@ -1,9 +1,9 @@
-class CreateDebitAmounts < ActiveRecord::Migration[7.0]
+class CreateVoucherDebitAmounts < ActiveRecord::Migration[7.0]
   def change
-    create_table :debit_amounts, id: :uuid do |t|
-      t.belongs_to :entry, null: false, foreign_key: true, type: :uuid
+    create_table :voucher_debit_amounts, id: :uuid do |t|
       t.integer :amount_cents, limit: 8, null: false
       t.belongs_to :account, null: false, foreign_key: true, type: :uuid
+      t.belongs_to :voucher, null: false,  type: :uuid
 
       t.timestamps
     end

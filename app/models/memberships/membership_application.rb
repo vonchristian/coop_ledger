@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Applications
+module Memberships
   class MembershipApplication < ApplicationRecord
     has_secure_token :reference_number
 

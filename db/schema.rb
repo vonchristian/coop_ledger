@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_04_07_010824) do
+ActiveRecord::Schema[7.0].define(version: 2022_05_14_011239) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -68,6 +68,34 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_07_010824) do
     t.index ["office_id"], name: "index_accounts_on_office_id"
   end
 
+  create_table "cash_disbursement_vouchers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "office_id", null: false
+    t.uuid "employee_id", null: false
+    t.string "reference_number", null: false
+    t.text "description", null: false
+    t.date "recording_date", null: false
+    t.timestamptz "recording_time", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["employee_id"], name: "index_cash_disbursement_vouchers_on_employee_id"
+    t.index ["office_id"], name: "index_cash_disbursement_vouchers_on_office_id"
+    t.index ["reference_number"], name: "index_cash_disbursement_vouchers_on_reference_number"
+  end
+
+  create_table "cash_receipt_vouchers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "office_id", null: false
+    t.uuid "employee_id", null: false
+    t.string "reference_number", null: false
+    t.text "description", null: false
+    t.date "recording_date", null: false
+    t.timestamptz "recording_time", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["employee_id"], name: "index_cash_receipt_vouchers_on_employee_id"
+    t.index ["office_id"], name: "index_cash_receipt_vouchers_on_office_id"
+    t.index ["reference_number"], name: "index_cash_receipt_vouchers_on_reference_number"
+  end
+
   create_table "cooperatives", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name", null: false
     t.string "abbreviated_name", null: false
@@ -100,6 +128,24 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_07_010824) do
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_debit_amounts_on_account_id"
     t.index ["entry_id"], name: "index_debit_amounts_on_entry_id"
+  end
+
+  create_table "employee_cash_accounts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "account_id", null: false
+    t.uuid "employee_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_employee_cash_accounts_on_account_id"
+    t.index ["employee_id"], name: "index_employee_cash_accounts_on_employee_id"
+  end
+
+  create_table "employee_entries", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "entry_id", null: false
+    t.uuid "employee_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["employee_id"], name: "index_employee_entries_on_employee_id"
+    t.index ["entry_id"], name: "index_employee_entries_on_entry_id"
   end
 
   create_table "employees", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -170,6 +216,15 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_07_010824) do
     t.index ["membership_category_id"], name: "index_memberships_on_membership_category_id"
   end
 
+  create_table "office_entries", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "office_id", null: false
+    t.uuid "entry_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["entry_id"], name: "index_office_entries_on_entry_id"
+    t.index ["office_id"], name: "index_office_entries_on_office_id"
+  end
+
   create_table "offices", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "office_type", null: false
     t.string "name", null: false
@@ -200,6 +255,69 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_07_010824) do
     t.index ["sex"], name: "index_people_on_sex"
   end
 
+  create_table "personal_savings", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "depositor_id", null: false
+    t.uuid "saving_product_id", null: false
+    t.uuid "liability_account_id", null: false
+    t.uuid "interest_expense_account_id", null: false
+    t.uuid "office_id", null: false
+    t.date "opening_date"
+    t.date "closing_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["depositor_id"], name: "index_personal_savings_on_depositor_id"
+    t.index ["interest_expense_account_id"], name: "index_personal_savings_on_interest_expense_account_id"
+    t.index ["liability_account_id"], name: "index_personal_savings_on_liability_account_id"
+    t.index ["office_id"], name: "index_personal_savings_on_office_id"
+    t.index ["saving_product_id"], name: "index_personal_savings_on_saving_product_id"
+  end
+
+  create_table "saving_applications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "member_id", null: false
+    t.uuid "saving_product_id", null: false
+    t.uuid "liability_account_id", null: false
+    t.uuid "interest_expense_account_id", null: false
+    t.uuid "office_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["interest_expense_account_id"], name: "index_saving_applications_on_interest_expense_account_id"
+    t.index ["liability_account_id"], name: "index_saving_applications_on_liability_account_id"
+    t.index ["member_id"], name: "index_saving_applications_on_member_id"
+    t.index ["office_id"], name: "index_saving_applications_on_office_id"
+    t.index ["saving_product_id"], name: "index_saving_applications_on_saving_product_id"
+  end
+
+  create_table "saving_products", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "cooperative_id", null: false
+    t.string "name", null: false
+    t.string "description", null: false
+    t.boolean "interest_earning", default: false, null: false
+    t.decimal "interest_rate"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cooperative_id"], name: "index_saving_products_on_cooperative_id"
+  end
+
+  create_table "voucher_credit_amounts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.bigint "amount_cents", null: false
+    t.uuid "account_id", null: false
+    t.uuid "voucher_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_voucher_credit_amounts_on_account_id"
+    t.index ["voucher_id"], name: "index_voucher_credit_amounts_on_voucher_id"
+  end
+
+  create_table "voucher_debit_amounts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.bigint "amount_cents", null: false
+    t.uuid "account_id", null: false
+    t.uuid "voucher_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_voucher_debit_amounts_on_account_id"
+    t.index ["voucher_id"], name: "index_voucher_debit_amounts_on_voucher_id"
+  end
+
   add_foreign_key "account_categories", "offices"
   add_foreign_key "account_category_running_balances", "account_categories"
   add_foreign_key "account_category_running_balances", "entries"
@@ -207,10 +325,18 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_07_010824) do
   add_foreign_key "account_running_balances", "entries"
   add_foreign_key "accounts", "account_categories"
   add_foreign_key "accounts", "offices"
+  add_foreign_key "cash_disbursement_vouchers", "employees"
+  add_foreign_key "cash_disbursement_vouchers", "offices"
+  add_foreign_key "cash_receipt_vouchers", "employees"
+  add_foreign_key "cash_receipt_vouchers", "offices"
   add_foreign_key "credit_amounts", "accounts"
   add_foreign_key "credit_amounts", "entries"
   add_foreign_key "debit_amounts", "accounts"
   add_foreign_key "debit_amounts", "entries"
+  add_foreign_key "employee_cash_accounts", "accounts"
+  add_foreign_key "employee_cash_accounts", "employees"
+  add_foreign_key "employee_entries", "employees"
+  add_foreign_key "employee_entries", "entries"
   add_foreign_key "employees", "offices"
   add_foreign_key "entries", "offices"
   add_foreign_key "membership_applications", "cooperatives"
@@ -219,5 +345,20 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_07_010824) do
   add_foreign_key "memberships", "cooperatives"
   add_foreign_key "memberships", "membership_categories"
   add_foreign_key "memberships", "people", column: "member_id"
+  add_foreign_key "office_entries", "entries"
+  add_foreign_key "office_entries", "offices"
   add_foreign_key "offices", "cooperatives"
+  add_foreign_key "personal_savings", "accounts", column: "interest_expense_account_id"
+  add_foreign_key "personal_savings", "accounts", column: "liability_account_id"
+  add_foreign_key "personal_savings", "offices"
+  add_foreign_key "personal_savings", "people", column: "depositor_id"
+  add_foreign_key "personal_savings", "saving_products"
+  add_foreign_key "saving_applications", "accounts", column: "interest_expense_account_id"
+  add_foreign_key "saving_applications", "accounts", column: "liability_account_id"
+  add_foreign_key "saving_applications", "offices"
+  add_foreign_key "saving_applications", "people", column: "member_id"
+  add_foreign_key "saving_applications", "saving_products"
+  add_foreign_key "saving_products", "cooperatives"
+  add_foreign_key "voucher_credit_amounts", "accounts"
+  add_foreign_key "voucher_debit_amounts", "accounts"
 end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Cooperatives
+module Memberships
   class MembershipCategory < ApplicationRecord
     belongs_to :cooperative
   end
