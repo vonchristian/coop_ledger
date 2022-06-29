@@ -3,7 +3,6 @@ name: Dev
 on:
   pull_request:
     types: [opened, reopened, synchronize]
-
 jobs:
   setup_pr:
     runs-on: ubuntu-latest
