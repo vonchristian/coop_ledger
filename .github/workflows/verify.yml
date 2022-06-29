@@ -1,98 +1,119 @@
-# Put this in the file: .github/workflows/verify.yml
+name: Dev
 
-name: Verify
-on: [push]
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
 
 jobs:
-  linters:
-    name: Linters
+  setup_pr:
+    runs-on: ubuntu-latest
+    # Dependabot no longer have access to secrets unless we move to pull_request_target.
+    # Read more: https://github.blog/changelog/2021-02-19-github-actions-workflows-triggered-by-dependabot-prs-will-run-with-read-only-permissions
+    if: ${{ github.actor != 'dependabot[bot]' }}
+    steps:
+      # Remove review_ready label when new commit push to PR
+      - name: Remove review_ready label
+        if: ${{ contains(github.event.pull_request.labels.*.name, 'review_ready') }}
+        uses: actions/github-script@v3
+        with:
+          script: |
+            github.issues.removeLabel({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'review_ready'
+            })
+      # Add wip label when new commit push to PR
+      - name: Add wip label
+        if: ${{ !contains(github.event.pull_request.labels.*.name, 'wip') }}
+        uses: actions/github-script@v3
+        with:
+          script: |
+            github.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['wip']
+            })
+
+  install:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - uses: actions/checkout@v2
 
-      - name: Setup Ruby and install gems
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.1.2'
-          bundler-cache: true
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
 
-      - name: Setup Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: 10.13.0
-      - name: Find yarn cache location
-        id: yarn-cache
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: JS package cache
-        uses: actions/cache@v1
-        with:
-          path: ${{ steps.yarn-cache.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Install packages
-        run: |
-          yarn install --pure-lockfile
-
-      - name: Run linters
-        run: |
-          bin/rubocop --parallel
-          bin/stylelint
-          bin/prettier
-          bin/eslint
-      - name: Run security checks
-        run: |
-          bin/bundler-audit --update
-          bin/brakeman -q -w2
-
-  tests:
-    name: Tests
+  rspec_test:
+    needs: [ install ]
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:11
-        env:
-          POSTGRES_USER: myapp
-          POSTGRES_DB: myapp_test
-          POSTGRES_PASSWORD: ""
-        ports: ["5432:5432"]
-
+    environment: test
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - uses: actions/checkout@v2
 
-      - name: Setup Ruby and install gems
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.1.2'
-          bundler-cache: true
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
 
-      - name: Setup Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: 10.13.0
-      - name: Find yarn cache location
-        id: yarn-cache
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: JS package cache
-        uses: actions/cache@v1
-        with:
-          path: ${{ steps.yarn-cache.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Install packages
-        run: |
-          yarn install --pure-lockfile
+    - name: Run RSpec
+      run: bundle exec rspec
 
-      - name: Setup test database
-        env:
-          RAILS_ENV: test
-          PGHOST: localhost
-          PGUSER: myapp
-        run: |
-          bin/rails db:setup
+    - uses: actions/upload-artifact@v2
+      if: always()
+      with:
+        name: test-results
+        path: /tmp/test-results
+        retention-days: 5
 
-      - name: Run tests
-        run: bin/rspec
+  rubocop_lint:
+    needs: [ install ]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+    - name: Install dependencies
+      run: bundle install
+
+    - name: Run Rubocop
+      run: |
+        bundle exec rubocop \
+          --parallel \
+          --format html -o /tmp/rubocop-results/rubocop.html \
+          --format simple
+
+    - uses: actions/upload-artifact@v2
+      if: always()
+      with:
+        name: rubocop-results
+        path: /tmp/rubocop-results
+        retention-days: 5
+
+  build_test:
+    needs: [ rspec_test, rubocop_lint ]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/github-script@v3
+      id: container-tag
+      with:
+        result-encoding: string
+        script: |
+          const {repo} = context.repo
+          const version = context.sha.substr(0, 7)
+
+          return `firstcircle/${repo}:${version}`
+
+    - name: Build image
+      env:
+        IMAGE_TAG: ${{steps.container-tag.outputs.result}}
+      run: |
+        docker build \
+          -f Dockerfile \
+          --tag ${IMAGE_TAG} .
