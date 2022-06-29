@@ -3,6 +3,7 @@ module Accounting
     module Balancers
       class RecordingDate
         attr_reader :recording_date,  :running_balances
+
         def self.execute(args = {})
           obj = new(args)
           obj.run

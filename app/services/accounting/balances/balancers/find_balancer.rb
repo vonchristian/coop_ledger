@@ -3,14 +3,14 @@
 module Accounting
   module Balances
     module Balancers
-      class Base
+      class FindBalancer
         PREFIX = "::Accounting::Balances::Balancers::"
         DEFAULT_BALANCE_CLASS = "Default"
         BALANCE_CLASSES = {
-          from_date_to_date: "DateRange",
+          from_date_to_date:                    "DateRange",
           from_date_from_time_to_date_to_time: "DateTimeRange",
-          to_date: "ToDate",
-          to_date_to_time: "ToDateToTime",
+          to_date:                             "ToDate",
+          to_date_to_time:                     "ToDateToTime",
         }
 
         attr_reader :sorted_args

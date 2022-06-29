@@ -10,18 +10,21 @@ module Accounting
 
     has_ancestry(primary_key_format: /\A[\w\-]+(\/[\w\-]+)*\z/)
 
-    scope :assets,   -> { where(account_type: Accounting::AccountType::ASSET) }
-    scope :revenues, -> { where(account_type: Accounting::AccountType::REVENUE) }
+    scope :assets,      -> { where(account_type: Accounting::AccountType::ASSET) }
+    scope :liabilities, -> { where(account_type: Accounting::AccountType::LIABILITY) }
+    scope :equities,    -> { where(account_type: Accounting::AccountType::EQUITY) }
+    scope :expenses,    -> { where(account_type: Accounting::AccountType::EXPENSE) }
+    scope :revenues,    -> { where(account_type: Accounting::AccountType::REVENUE) }
 
     belongs_to :office
     has_many :accounts,         class_name: 'Accounting::Account'
     has_many :debit_amounts,    class_name: 'Accounting::Amounts::DebitAmount',  through: :accounts
     has_many :credit_amounts,   class_name: 'Accounting::Amounts::CreditAmount',  through: :accounts
     has_many :running_balances, class_name: "Accounting::RunningBalances::AccountCategory"
-
+    has_many :sub_categories,   class_name: "Accounting::AccountCategory", foreign_key: "ancestry"
     validates :name, :account_type, presence: true
 
-    def self.no_ancestry
+    def self.no_sub_categories
       where(ancestry: nil)
     end
 
@@ -44,7 +47,8 @@ module Accounting
     def all_accounts
       return accounts if subtree.one?
 
-      Accounting::Account.where(id: (subtree.includes(:accounts).map{ |sub| sub.accounts.ids }.compact.flatten.uniq))
+      ids = subtree.includes(:accounts).map{ |sub| sub.accounts.ids }.compact.flatten.uniq
+      Accounting::Account.where(id: ids)
     end
   end
 end

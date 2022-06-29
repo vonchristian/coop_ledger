@@ -1,4 +1,4 @@
-TimeRange = Struct.new(:from_time, :to_time, keyword_init: true) do
+TimeRangeParser = Struct.new(:from_time, :to_time, keyword_init: true) do
   def range
     start_time..end_time
   end

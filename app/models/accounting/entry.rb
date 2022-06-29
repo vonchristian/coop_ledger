@@ -2,7 +2,7 @@
 
 module Accounting
   class Entry < ApplicationRecord
-    belongs_to :running_balance, class_name: "Accounting::Accounts::RunningBalance", optional: true
+    has_one :account_running_balance, class_name: "Accounting::RunningBalances::Account"
     has_many :debit_amounts,     class_name: 'Accounting::Amounts::DebitAmount'
     has_many :credit_amounts,    class_name: 'Accounting::Amounts::CreditAmount'
     has_many :debit_accounts,    through: :debit_amounts, class_name: "Accounting::Account", source: :account
@@ -13,17 +13,13 @@ module Accounting
     validate :has_debit_amounts?
     validate :amounts_cancel?
 
-    def self.find_entries(ids:)
-      where(id: ids)
-    end
-
     def self.order_by_latest
       order(recording_date: :desc)
       .order(recording_time: :desc)
     end
 
     def accounts
-      Accounting::Account.find_accounts(ids: account_ids)
+      Accounting::Account.where(id: account_ids)
     end
 
     def account_ids

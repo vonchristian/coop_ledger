@@ -19,7 +19,8 @@ module Accounting
 
         def run
           amounts
-            .where(recording_date: date_range)
+            .joins(:entry)
+            .where("entries.recording_date" => date_range)
             .total
         end
 

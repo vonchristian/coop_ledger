@@ -11,5 +11,7 @@ class CreateAccountRunningBalances < ActiveRecord::Migration[7.0]
     end
 
     add_index :account_running_balances, [:account_id, :entry_id], unique: true
+    add_index :account_running_balances, :recording_date
+    add_index :account_running_balances, :recording_time
   end
 end

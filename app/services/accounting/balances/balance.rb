@@ -3,16 +3,17 @@
 module Accounting
   module Balances
     module Balance
+
       def total
         Money.new(sum(:amount_cents)).amount
       end
 
       def balance(args = {})
-        balancer(args).execute(args.merge(amounts: self))
+        find_balancer(args).execute(args.merge(amounts: self))
       end
 
-      def balancer(args = {})
-        Accounting::Balances::Balancers::Base.execute(args)
+      def find_balancer(args = {})
+        Accounting::Balances::Balancers::FindBalancer.execute(args)
       end
 
       def balance_for_new_record

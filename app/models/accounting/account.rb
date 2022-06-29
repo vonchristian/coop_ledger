@@ -28,12 +28,8 @@ module Accounting
       validate :same_type_with_account_category
     end
 
-    def self.find_accounts(ids:)
-      where(id: ids)
-    end
-
     def entries
-      Accounting::Entry.find_entries(ids: entry_ids)
+      Accounting::Entry.where(id: entry_ids)
     end
 
     def entry_ids

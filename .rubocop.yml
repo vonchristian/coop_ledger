@@ -2,9 +2,6 @@ require:
   - rubocop-rails
   - rubocop-rspec
 
-inherit_gem:
-  rubocop-shopify: rubocop.yml
-
 AllCops:
   NewCops: enable
   # We don't always use bundler to make for a faster boot time.
@@ -125,8 +122,8 @@ Style/MethodCallWithArgsParentheses:
 Style/MultilineBlockChain:
   Enabled: false
 
-Style/MethodCallWithArgsParentheses:
+RSpec/BeEql:
   Enabled: false
 
-Rspec/BeEql:
+Style/StringLiterals:
   Enabled: false

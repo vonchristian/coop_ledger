@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  factory :account_running_balance, class: "Accounting::Accounts::RunningBalance" do
+  factory :account_running_balance, class: "Accounting::RunningBalances::Account" do
     association :account
     association :entry, factory: :entry_with_debit_and_credit
     recording_date { Date.current }

@@ -52,6 +52,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_14_011239) do
     t.index ["account_id", "entry_id"], name: "index_account_running_balances_on_account_id_and_entry_id", unique: true
     t.index ["account_id"], name: "index_account_running_balances_on_account_id"
     t.index ["entry_id"], name: "index_account_running_balances_on_entry_id"
+    t.index ["recording_date"], name: "index_account_running_balances_on_recording_date"
+    t.index ["recording_time"], name: "index_account_running_balances_on_recording_time"
   end
 
   create_table "accounts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

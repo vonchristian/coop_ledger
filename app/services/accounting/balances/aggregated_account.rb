@@ -5,8 +5,8 @@ module Accounting
     module AggregatedAccount
       def balance(args = {})
         accounts_balance = BigDecimal("0")
-
-        all.each do |account|
+        accounts = all
+        accounts.each do |account|
           if account.contra?
             accounts_balance -= account.balance(args)
           else

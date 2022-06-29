@@ -5,7 +5,5 @@ FactoryBot.define do
     association :entry
     amount_cents { 10_000 }
     association :account, factory: [:account, :expense]
-    recording_date { Date.current }
-    recording_time { Time.zone.now }
   end
 end

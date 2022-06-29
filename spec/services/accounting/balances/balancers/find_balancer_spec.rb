@@ -5,7 +5,7 @@ require "rails_helper"
 module Accounting
   module Balances
     module Balancers
-      describe Base do
+      describe FindBalancer do
         describe "execute" do
           it "when args is empty" do
             result = described_class.new

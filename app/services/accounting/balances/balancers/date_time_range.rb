@@ -25,8 +25,9 @@ module Accounting
 
         def compute
           amounts
-            .where(recording_date: date_range)
-            .where(recording_time: time_range)
+            .joins(:entry)
+            .where("entries.recording_date" => date_range)
+            .where("entries.recording_time" => time_range)
             .total
         end
 
@@ -35,7 +36,7 @@ module Accounting
         end
 
         def time_range
-          TimeRange.new(from_time: from_time, to_time: to_time).range
+          TimeRangeParser.new(from_time: from_time, to_time: to_time).range
         end
       end
     end

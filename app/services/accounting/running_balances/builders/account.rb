@@ -27,13 +27,13 @@ module Accounting
         def create_running_balance
           account.running_balances.create!(
             entry:          entry,
-            balance:        balance,
+            amount:        total_amount,
             recording_date: entry.recording_date,
             recording_time: entry.recording_time
           )
         end
 
-        def balance
+        def total_amount
           Accounting::Balances::ForEntry.execute(account: account, entry: entry)
         end
       end
