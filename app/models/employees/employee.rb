@@ -1,5 +1,9 @@
-class Employee < ApplicationRecord
-  has_secure_password
+# frozen_string_literal: true
 
-  belongs_to :office
+module Employees
+  class Employee < ApplicationRecord
+    has_secure_password
+
+    belongs_to :office
+  end
 end
