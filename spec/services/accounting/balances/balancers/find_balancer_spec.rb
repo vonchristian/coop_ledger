@@ -25,8 +25,13 @@ module Accounting
             expect(result.run).to eql Accounting::Balances::Balancers::DateRange
           end
 
-          it "when args is from_date_from_time_to_date_to_time" do
-            result = described_class.new(from_date: Date.current.last_year, from_time: Time.zone.now, to_date: Date.current, to_time: Time.zone.now)
+          it "when args is from_date_from_time_to_date_to_time" do # rubocop:disable RSpec/ExampleLength
+            result = described_class.new(
+              from_date: Date.current.last_year,
+              from_time: Time.zone.now,
+              to_date: Date.current,
+              to_time: Time.zone.now
+            )
 
             expect(result.run).to eql Accounting::Balances::Balancers::DateTimeRange
           end
@@ -40,7 +45,10 @@ module Accounting
           it "when args is invalid" do
             result = described_class.new(date: Date.current, time: Time.zone.now)
 
-            expect{ result.run }.to raise_error(StandardError, "Invalid arguments. Must be #{described_class::BALANCE_CLASSES.keys}")
+            expect { result.run }.to raise_error(
+              StandardError,
+              "Invalid arguments. Must be #{described_class::BALANCE_CLASSES.keys}"
+            )
           end
         end
       end

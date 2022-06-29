@@ -127,3 +127,6 @@ RSpec/BeEql:
 
 Style/StringLiterals:
   Enabled: false
+
+Layout/HashAlignment:
+  Enabled: false

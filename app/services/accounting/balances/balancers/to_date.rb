@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 module Accounting
   module Balances
     module Balancers
       class ToDate
-        attr_reader :from_date, :to_date, :amounts
+        attr_reader :to_date, :amounts
 
         def self.execute(args = {})
           obj = new(args)
@@ -10,10 +12,8 @@ module Accounting
         end
 
         def initialize(args = {})
-          @from_date = Date.current - Date.current.year.years
           @to_date   = args.fetch(:to_date)
           @amounts   = args.fetch(:amounts)
-          @amounts   = amounts
         end
 
         def run
@@ -23,9 +23,16 @@ module Accounting
         def compute
           Accounting::Balances::Balancers::DateRange.execute(
             amounts: amounts,
-            from_date: from_date,
-            to_date: to_date
+            date_range: date_range
           )
+        end
+
+        def date_range
+          DateRangeParser.new(from_date: from_date, to_date: to_date).range
+        end
+
+        def from_date
+          Date.current - Date.current.year.years
         end
       end
     end
