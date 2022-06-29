@@ -17,7 +17,7 @@ module Accounting
     has_many :accounts,         class_name: 'Accounting::Account'
     has_many :debit_amounts,    class_name: 'Accounting::Amounts::DebitAmount',  through: :accounts
     has_many :credit_amounts,   class_name: 'Accounting::Amounts::CreditAmount',  through: :accounts
-    has_many :running_balances, class_name: "Accounting::AccountCategories::RunningBalance"
+    has_many :running_balances, class_name: "Accounting::RunningBalances::AccountCategory"
 
     validates :name, :account_type, presence: true
 

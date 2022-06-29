@@ -13,7 +13,7 @@ module Accounting
     has_many :credit_amounts,   class_name: "Accounting::Amounts::CreditAmount", dependent: :restrict_with_exception
     has_many :debit_entries,    class_name: "Accounting::Entry", through: :debit_amounts, source: :entry
     has_many :credit_entries,   class_name: "Accounting::Entry", through: :credit_amounts, source: :entry
-    has_many :running_balances, class_name: "Accounting::Accounts::RunningBalance", dependent: :restrict_with_exception
+    has_many :running_balances, class_name: "Accounting::RunningBalances::Account", dependent: :restrict_with_exception
 
     validates :name, :code, :account_type, presence: true
     validates :account_type, inclusion: Accounting::AccountType::ACCOUNT_TYPES

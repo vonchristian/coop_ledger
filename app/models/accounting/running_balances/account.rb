@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Accounting
-  module Accounts
-    class RunningBalance < ApplicationRecord
+  module RunningBalances
+    class Account < ApplicationRecord
       self.table_name = 'account_running_balances'
 
       monetize :amount_cents, as: :amount
