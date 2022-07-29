@@ -1,5 +1,10 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
-RSpec.describe SavingProduct, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+module Savings
+  describe SavingProduct, type: :model do
+    describe 'associations' do
+    end
+  end
 end

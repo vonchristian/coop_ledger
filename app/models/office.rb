@@ -8,6 +8,7 @@ class Office < ApplicationRecord
   }
 
   belongs_to :cooperative
+  has_many :personal_savings_account_applications, class_name: "Savings::PersonalAccounts::Application"
 
   validates :name, presence: true
 end

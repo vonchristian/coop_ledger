@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-module Members
+module Memberships
   RSpec.describe Membership do
     describe "associations" do
       it { is_expected.to belong_to :member }

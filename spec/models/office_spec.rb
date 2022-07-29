@@ -5,6 +5,7 @@ require "rails_helper"
 RSpec.describe Office, type: :model do
   describe "associations" do
     it { is_expected.to belong_to :cooperative }
+    it { is_expected.to have_many :personal_savings_account_applications }
   end
 
   describe "validations" do

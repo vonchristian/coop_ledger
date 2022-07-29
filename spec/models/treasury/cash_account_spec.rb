@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-module Personal
-  describe Person, type: :model do
+module Treasury
+  describe CashAccount, type: :model do
   end
 end

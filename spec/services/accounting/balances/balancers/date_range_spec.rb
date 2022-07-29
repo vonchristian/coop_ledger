@@ -7,18 +7,20 @@ module Accounting
     module Balancers
       describe DateRange do
         describe ".execute" do
-          let!(:last_year_amount) { create(:debit_amount, recording_date: Date.current.last_year, amount: 5_000) }
-          let!(:this_year_amount) { create(:debit_amount, recording_date: Date.current, amount: 1_000) }
-          let!(:from_date)        { Date.current.beginning_of_year }
-          let!(:to_date)          { Date.current.end_of_year }
-          let!(:result)           { described_class.new(
+          let!(:entry1) { create(:entry_with_debit_and_credit, recording_date: Date.current.last_year) }
+          let!(:entry2) { create(:entry_with_debit_and_credit, recording_date: Date.current) }
+          let!(:result1) { described_class.new(
             amounts: Accounting::Amounts::DebitAmount.all,
-            from_date: from_date,
-            to_date: to_date)
+            date_range: Date.current.beginning_of_year..Date.current.end_of_year)
+          }
+
+          let!(:result2) { described_class.new(
+            amounts: Accounting::Amounts::DebitAmount.all,
+            date_range: Date.current.last_year..Date.current.end_of_year)
           }
 
           it "computes based on date range passed" do
-            expect(result.run).to eq 1_000
+            expect(result2.run.to_f).to eq 2_000
           end
         end
       end
